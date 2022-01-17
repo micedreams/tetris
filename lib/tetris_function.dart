@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import "dart:math";
+import 'package:tetris/constants.dart';
 
 class TetrisFunction {
   Function eq = const ListEquality().equals;
@@ -8,57 +9,12 @@ class TetrisFunction {
   var currentPiece = List.filled(4, 0, growable: false);
   var nextCurrentPiece = List.filled(4, 0, growable: false);
   var lines = 0;
-  var leftEdge = [
-    0,
-    10,
-    20,
-    30,
-    40,
-    50,
-    60,
-    70,
-    80,
-    90,
-    100,
-    110,
-    120,
-    130,
-    140,
-    150
-  ];
-  var rightEdge = [
-    9,
-    19,
-    29,
-    39,
-    49,
-    59,
-    69,
-    79,
-    89,
-    99,
-    109,
-    119,
-    129,
-    139,
-    149,
-    159
-  ];
-
-  var blocks = [
-    [4, 5, 6, 7],
-    [4, 5, 6, 14],
-    [4, 5, 6, 15],
-    [4, 5, 13, 14],
-    [4, 5, 14, 15],
-    [4, 5, 15, 16]
-  ];
 
   assignCurrentPiece() {
     var data = removeCompleteLine();
     str = data[0];
     lines = data[1];
-    currentPiece = blocks[_random.nextInt(blocks.length)];
+    currentPiece = BLOCKS[_random.nextInt(BLOCKS.length)];
     str = _setCurrentPiece();
     return [str, lines];
   }
@@ -252,7 +208,7 @@ class TetrisFunction {
       nextCurrentPiece[i] = currentPiece[i] - 1;
     }
     for (var i = 0; i < nextCurrentPiece.length; i++) {
-      if (leftEdge.contains(currentPiece[i])) {
+      if (LEFT_EDGE.contains(currentPiece[i])) {
         return true;
       }
     }
@@ -326,7 +282,7 @@ class TetrisFunction {
       nextCurrentPiece[i] = currentPiece[i] + 1;
     }
     for (var i = 0; i < nextCurrentPiece.length; i++) {
-      if (rightEdge.contains(currentPiece[i])) {
+      if (RIGHT_EDGE.contains(currentPiece[i])) {
         return true;
       }
     }
