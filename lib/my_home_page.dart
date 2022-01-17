@@ -28,20 +28,32 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 10,
-            children: List.generate(160, (index) {
-              return GridTile(
-                child: str[index] != ""
-                    ? const Card(color: Colors.black)
-                    : const Card(color: Colors.white),
-              );
-            }),
-          ),
+          FutureBuilder(future: (() async {
+            await Future<void>.delayed(Duration(seconds: 1));
+            if (function.hitBase(str)) {
+              str = function.assignCurrentPiece();
+            } else {
+              await Future<void>.delayed(Duration(seconds: 10));
+              setState(() {
+                str = function.moveCurrentPiece("down");
+              });
+            }
+          })(), builder: (context, snapshot) {
+            return GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 10,
+              children: List.generate(160, (index) {
+                return GridTile(
+                  child: str[index] != ""
+                      ? const Card(color: Colors.black)
+                      : const Card(color: Colors.white),
+                );
+              }),
+            );
+          }),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: ["left", "down", "turn", "right"].map((entry) {
+            children: ["left", "turn", "right"].map((entry) {
               return ElevatedButton(
                 onPressed: () {
                   setState(() {

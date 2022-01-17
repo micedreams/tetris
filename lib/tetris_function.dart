@@ -1,17 +1,61 @@
-import 'package:tetris/hit_edge.dart';
-import 'package:tetris/pick_block.dart';
 import 'package:collection/collection.dart';
+import "dart:math";
 
 class TetrisFunction {
   Function eq = const ListEquality().equals;
-  HitEdge hitEdge = HitEdge();
-  PickBlock pickBlock = PickBlock();
+  final _random = Random();
   var str = List.filled(160, "", growable: false);
   var currentPiece = List.filled(4, 0, growable: false);
+  var nextCurrentPiece = List.filled(4, 0, growable: false);
+  var leftEdge = [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150
+  ];
+  var rightEdge = [
+    9,
+    19,
+    29,
+    39,
+    49,
+    59,
+    69,
+    79,
+    89,
+    99,
+    109,
+    119,
+    129,
+    139,
+    149,
+    159
+  ];
+
+  var blocks = [
+    [4, 5, 6, 7],
+    [4, 5, 6, 14],
+    [4, 5, 6, 15],
+    [4, 5, 13, 14],
+    [4, 5, 14, 15],
+    [4, 5, 15, 16]
+  ];
 
   assignCurrentPiece() {
     str = removeCompleteLine();
-    currentPiece = pickBlock.pickElement();
+    currentPiece = blocks[_random.nextInt(blocks.length)];
     str = _setCurrentPiece();
     return str;
   }
@@ -32,26 +76,21 @@ class TetrisFunction {
   }
 
   moveCurrentPiece(direction) {
-    if (hitEdge.hitBase(currentPiece, str)) {
-      str = assignCurrentPiece();
-    } else {
-      str = _removeLastCurrentPiece();
-      if (direction == "down" && !hitEdge.hitBase(currentPiece, str)) {
-        str = _moveDownCurrentPiece();
-      } else if (direction == "left" &&
-          !hitEdge.hitSideLeft(currentPiece, str)) {
-        str = _moveLeftCurrentPiece();
-      } else if (direction == "right" &&
-          !hitEdge.hitSideRight(currentPiece, str)) {
-        str = _moveRightCurrentPiece();
-      } else if (direction == "turn" &&
-          !hitEdge.hitSideRight(currentPiece, str) &&
-          !hitEdge.hitSideLeft(currentPiece, str) &&
-          !hitEdge.hitBase(currentPiece, str)) {
-        str = _turnCurrentPiece(currentPiece[0]);
-      }
-      str = _setCurrentPiece();
+    str = _removeLastCurrentPiece();
+    if (direction == "down" && !hitBase(str)) {
+      str = _moveDownCurrentPiece();
+    } else if (direction == "left" && !_hitSideLeft(str)) {
+      str = _moveLeftCurrentPiece();
+    } else if (direction == "right" && !_hitSideRight(str)) {
+      str = _moveRightCurrentPiece();
+    } else if (direction == "turn" &&
+        !_hitSideRight(str) &&
+        !_hitSideLeft(str) &&
+        !hitBase(str)) {
+      str = _turnCurrentPiece(currentPiece[0]);
     }
+    str = _setCurrentPiece();
+
     return str;
   }
 
@@ -130,5 +169,219 @@ class TetrisFunction {
       currentPiece = [x, x + 1, x + 11, x + 21];
     }
     return str;
+  }
+
+  hitBase(str) {
+    for (var i = 0; i < currentPiece.length; i++) {
+      nextCurrentPiece[i] = currentPiece[i] + 10;
+    }
+    for (var i = 0; i < nextCurrentPiece.length; i++) {
+      if (nextCurrentPiece[i] > 159) {
+        return true;
+      }
+    }
+    var x = nextCurrentPiece[0];
+
+    if (eq(nextCurrentPiece, [x, x + 1, x + 2, x + 3]) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 9, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 8, x + 9, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 10])) &&
+        (str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 11, x + 12]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 11])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 2, x + 12])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 19]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 20]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 20, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 19, x + 20])) &&
+        (str[nextCurrentPiece[2]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 10, x + 20]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 20]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 12]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 21])) &&
+        (str[nextCurrentPiece[1]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 11, x + 21])) &&
+        (str[nextCurrentPiece[0]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 20, x + 30])) &&
+        (str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    return false;
+  }
+
+  _hitSideLeft(str) {
+    for (var i = 0; i < currentPiece.length; i++) {
+      if (currentPiece[i] < 0) {
+        return true;
+      }
+    }
+
+    for (var i = 0; i < currentPiece.length; i++) {
+      nextCurrentPiece[i] = currentPiece[i] - 1;
+    }
+    for (var i = 0; i < nextCurrentPiece.length; i++) {
+      if (leftEdge.contains(currentPiece[i])) {
+        return true;
+      }
+    }
+
+    var x = nextCurrentPiece[0];
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 20, x + 30])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 11, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 19]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 20]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 20])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 20, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 19, x + 20])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x')) {
+      return true;
+    }
+
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 11, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 10, x + 20])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 2, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 12])) &&
+        (str[nextCurrentPiece[0]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 9, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 11, x + 12])) &&
+        (str[nextCurrentPiece[0]] == 'x' || str[nextCurrentPiece[2]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 9, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 8, x + 9, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 12])) &&
+        (str[nextCurrentPiece[0]] == 'x' || str[nextCurrentPiece[1]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 2, x + 3])) &&
+        (str[nextCurrentPiece[0]] == 'x')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  _hitSideRight(str) {
+    for (var i = 0; i < currentPiece.length; i++) {
+      if (currentPiece[i] > 159) {
+        return true;
+      }
+    }
+
+    for (var i = 0; i < currentPiece.length; i++) {
+      nextCurrentPiece[i] = currentPiece[i] + 1;
+    }
+    for (var i = 0; i < nextCurrentPiece.length; i++) {
+      if (rightEdge.contains(currentPiece[i])) {
+        return true;
+      }
+    }
+
+    var x = nextCurrentPiece[0];
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 20, x + 30])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 11, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 19]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 11, x + 20]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 20])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 20, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 10, x + 19, x + 20])) &&
+        (str[nextCurrentPiece[0]] == 'x' ||
+            str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 11, x + 21]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 10, x + 20])) &&
+        (str[nextCurrentPiece[1]] == 'x' ||
+            str[nextCurrentPiece[2]] == 'x' ||
+            str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+
+    if ((eq(nextCurrentPiece, [x, x + 10, x + 11, x + 12]) ||
+            eq(nextCurrentPiece, [x, x + 9, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 8, x + 9, x + 10])) &&
+        (str[nextCurrentPiece[0]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 10, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 9, x + 10]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 11, x + 12])) &&
+        (str[nextCurrentPiece[1]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 2, x + 12]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 11]) ||
+            eq(nextCurrentPiece, [x, x + 1, x + 2, x + 10])) &&
+        (str[nextCurrentPiece[2]] == 'x' || str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+    if ((eq(nextCurrentPiece, [x, x + 1, x + 2, x + 3])) &&
+        (str[nextCurrentPiece[3]] == 'x')) {
+      return true;
+    }
+
+    return false;
   }
 }
