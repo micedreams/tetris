@@ -26,59 +26,33 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("tetris"),
       ),
-      body: Center(
-        child: ListView(
-          children: [
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 10,
-              children: List.generate(160, (index) {
-                return GridTile(
-                  child: str[index] != ""
-                      ? const Card(color: Colors.black)
-                      : const Card(color: Colors.white),
-                );
-              }),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      str = function.moveCurrentPiece("left");
-                    });
-                  },
-                  child: const Text("<"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      str = function.moveCurrentPiece("down");
-                    });
-                  },
-                  child: const Text("v"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      str = function.moveCurrentPiece("right");
-                    });
-                  },
-                  child: const Text(">"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      str = function.moveCurrentPiece("turn");
-                    });
-                  },
-                  child: const Text("Turn"),
-                ),
-              ],
-            )
-          ],
-        ),
+      body: ListView(
+        children: [
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 10,
+            children: List.generate(160, (index) {
+              return GridTile(
+                child: str[index] != ""
+                    ? const Card(color: Colors.black)
+                    : const Card(color: Colors.white),
+              );
+            }),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: ["left", "down", "turn", "right"].map((entry) {
+              return ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    str = function.moveCurrentPiece(entry);
+                  });
+                },
+                child: Text(entry),
+              );
+            }).toList(),
+          )
+        ],
       ),
     );
   }
