@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 
 class HitEdge {
   Function eq = const ListEquality().equals;
+  var nextCurrentPiece = List.filled(4, 0, growable: false);
   var leftEdge = [
     0,
     10,
@@ -39,7 +40,6 @@ class HitEdge {
     159
   ];
   hitBase(currentPiece, str) {
-    var nextCurrentPiece = List.filled(4, 0, growable: false);
     for (var i = 0; i < currentPiece.length; i++) {
       nextCurrentPiece[i] = currentPiece[i] + 10;
     }
@@ -106,7 +106,6 @@ class HitEdge {
   }
 
   hitSideLeft(currentPiece, str) {
-    var nextCurrentPiece = List.filled(4, 0, growable: false);
     for (var i = 0; i < currentPiece.length; i++) {
       if (currentPiece[i] < 0) {
         return true;
@@ -181,7 +180,6 @@ class HitEdge {
   }
 
   hitSideRight(currentPiece, str) {
-    var nextCurrentPiece = List.filled(4, 0, growable: false);
     for (var i = 0; i < currentPiece.length; i++) {
       if (currentPiece[i] > 159) {
         return true;
