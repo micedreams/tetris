@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -66,6 +66,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                   child: const Text(">"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      str = function.moveCurrentPiece("turn");
+                    });
+                  },
+                  child: const Text("Turn"),
                 ),
               ],
             )
