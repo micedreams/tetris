@@ -29,38 +29,54 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: const Text("tetris"),
         ),
-        body: Column(
-          children: [
-            FutureBuilder(future: (() async {
-              await Future<void>.delayed(const Duration(seconds: 1));
-              if (function.hitBase(str)) {
-                var data = function.assignCurrentPiece();
-                str = data[0];
-                lines = data[1];
-              } else {
-                await Future<void>.delayed(const Duration(seconds: 10));
-                setState(() {
-                  str = function.moveCurrentPiece("down");
-                });
-              }
-            })(), builder: (context, snapshot) {
-              return GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 10,
-                children: List.generate(str.length, (index) {
-                  return GridTile(
-                    child: str[index] != ""
-                        ? const Card(color: Colors.black)
-                        : const Card(color: Colors.grey),
-                  );
-                }),
-              );
-            }),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text("lines: $lines"),
-            )
-          ],
+        body: InkWell(
+          onLongPress: () {
+            var data = function.reset();
+            setState(() {
+              str = data[0];
+              lines = data[1];
+            });
+            data = function.assignCurrentPiece();
+            setState(() {
+              str = data[0];
+              lines = data[1];
+            });
+          },
+          child: Column(
+            children: [
+              FutureBuilder(future: (() async {
+                await Future<void>.delayed(const Duration(seconds: 1));
+                if (function.hitBase(str)) {
+                  var data = function.assignCurrentPiece();
+                  setState(() {
+                    str = data[0];
+                    lines = data[1];
+                  });
+                } else {
+                  await Future<void>.delayed(const Duration(seconds: 10));
+                  setState(() {
+                    str = function.moveCurrentPiece("down");
+                  });
+                }
+              })(), builder: (context, snapshot) {
+                return GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 10,
+                  children: List.generate(str.length, (index) {
+                    return GridTile(
+                      child: str[index] != ""
+                          ? const Card(color: Colors.black)
+                          : const Card(color: Colors.grey),
+                    );
+                  }),
+                );
+              }),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text("lines: $lines"),
+              )
+            ],
+          ),
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.only(bottom: 20.0),

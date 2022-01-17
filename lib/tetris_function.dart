@@ -19,6 +19,12 @@ class TetrisFunction {
     return [str, lines];
   }
 
+  reset() {
+    str = List.filled(160, "", growable: false);
+    currentPiece = List.filled(4, 0, growable: false);
+    return [str, lines];
+  }
+
   removeCompleteLine() {
     for (var j = 0; j < str.length - 10; j = j + 10) {
       var jRow = str.sublist(j, j + 10);
