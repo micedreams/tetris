@@ -7,6 +7,7 @@ class TetrisFunction {
   var str = List.filled(160, "", growable: false);
   var currentPiece = List.filled(4, 0, growable: false);
   var nextCurrentPiece = List.filled(4, 0, growable: false);
+  var lines = 0;
   var leftEdge = [
     0,
     10,
@@ -54,16 +55,19 @@ class TetrisFunction {
   ];
 
   assignCurrentPiece() {
-    str = removeCompleteLine();
+    var data = removeCompleteLine();
+    str = data[0];
+    lines = data[1];
     currentPiece = blocks[_random.nextInt(blocks.length)];
     str = _setCurrentPiece();
-    return str;
+    return [str, lines];
   }
 
   removeCompleteLine() {
     for (var j = 0; j < str.length - 10; j = j + 10) {
       var jRow = str.sublist(j, j + 10);
       if (jRow.every((e) => e == "x")) {
+        lines = lines + 1;
         for (var i = j + 9; i > 9; i--) {
           str[i] = str[i - 10];
         }
@@ -72,7 +76,7 @@ class TetrisFunction {
         }
       }
     }
-    return str;
+    return [str, lines];
   }
 
   moveCurrentPiece(direction) {
